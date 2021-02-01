@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+<div class="col col-lg-12 col-md-12 col-sm-12">
+
+<form method="POST">
+{% csrf_token %}
+<p class="lead"> Are you sure to delete </p>{{instance.content}}
+<input class="btn btn-primary"  type="submit" value="submit" >
+<a class="btn-danger" href="{% url 'home:details' slug=instance.post.slug  %}" type="submit" value="cancel" >Cancel</a>
+
+</form>
+
+
+
+</div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

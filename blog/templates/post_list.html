@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<title>List</title>
+
+      
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home:list' %}">List</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'home:post'  %}">Create New Post</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">User: {{request.user.get_full_name|title}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'accounts:logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+        <div class="container">
+          <div class="row">
+            <h1>List</h1>
+            {% for obj in objects %}
+            <div class="col col-lg-4 col-md-6 col-sm-12">
+             
+              <br>
+                  <div class="card-group">
+                      <div class="card" style="width: 18rem;">
+                        {% if obj.image %}
+                        <img src="{{obj.image.url}}" class="card-img-top"  alt="Image">
+                        {% else %}
+                        <img src="{% static 'default.png' %}"   class="card-img-top"  alt="Image">
+
+                       {% endif %}
+                        <div class="card-body">
+                      <a href="{% url 'home:details' slug=obj.slug %}">   <h5 class="card-title"> {{obj.title}}</h5> </a>
+                          <p>Author: {{obj.user.get_full_name|title}}</p>
+                          <p class="card-text">Content: {{obj.content|safe|truncatechars_html:10}}</p>
+                        
+                          <p class="card-text"><small class="text-muted">{{instance.updated}}</small></p>
+                        </div>
+                        <div class="buttons">
+                          <a class="btn btn-primary" href="{% url 'home:details' slug=obj.slug %}" role="button">Details</a>        
+                        </div>
+                      </div>
+                  
+                    </div>
+              </div>
+              
+              {% endfor %}
+            </div>
+
+        {% if objects.has_other_pages %}
+
+
+
+<div class="col col-g-12">
+<div class="pagination_wrap">
+
+<ul class="pagination">
+  
+{% if objects.has_previous %}
+<li class="page-item">
+  <li  class="page-item" ><a href="?page={{objects.previous_page_number}}"><li class="ti-angle-left"></li></a> </li>
+{% endif %}
+{% for i in objects.paginator.page_range %}
+<li  class="page-item"><a href="?page={{i}}"><span>{{i}}</span></a></li>
+{% endfor %}
+
+{% if objects.has_next %}
+<li  class="page-item"><a href="?page={{objects.next_page_number}}"><li class="ti-angle-left"></li></a> </li>
+{% endif %}
+</ul>
+
+</div>
+
+</div>
+{% endif %}
+
+
+              
+
+        
+          </div>
+
+
+
+  
+<!--
+            <ul class="pagination">
+               
+                <li class="page-item">
+               
+                  {% if objects.has_previous %}
+                  <span class="page-item">Previous</span>
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                  {% endif %}
+                </a>
+              
+              </li>
+
+              <li class="page-item active" aria-current="page">
+                <span class="page-item">{{objects.page_number}}</span>
+              </li>
+
+               
+                <li class="page-item">
+                  <span class="page-item">Next</span>
+                  {% if objects.has_next %}
+                <a class="page-link" href="?page={{ objects.next_page_number }}">
+              </a>
+              {% endif %}
+           </li>
+             
+            </ul>
+-->
+
+{% endblock %}
+
+
+

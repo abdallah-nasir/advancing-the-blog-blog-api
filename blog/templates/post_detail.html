@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load static %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<title>{{instance.title}}</title> 
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home:list' %}">List</a>
+      {% if instance.user == request.user %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'home:update' slug=instance.slug %}">Update</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'home:delete' slug=instance.slug %}">Delete</a>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </nav>
+
+
+  <div class="container">
+    <div class="row">
+        <h2>{{instance.title}} </h2>
+        <p>Created By {{instance.user.get_full_name|title}} since : <small>{{instance.timestamp|timesince}}</small></p>
+     
+    
+          {% include 'messages_display.html' %}
+      
+        
+        <div class="col col-lg-6 col-md-12 col-sm-12">
+          {% if instance.image %}
+          <img src="{{instance.image.url}}"  alt="image-field" width='300px' class="img-thumbnail">
+          {% else %}
+          <img src="{% static 'default.png' %}"  alt="image-field" width='300px' class="img-thumbnail">
+            {% endif %}
+          </div>
+        <hr>
+    </div>
+  </div>
+
+  <div class="container">
+<div class="row">
+  <div class="col col-lg-6 col-md-6 col-sm-12">
+    <h3>Content:</h3>
+    {{instance.body|safe}} 
+</div>
+</div>
+</div>
+
+<div class="container">
+  <div class="col col-lg-6 col-md-12 col-sm-12">
+    <a class="btn btn-primary btn-sm"  role="button" href="https://www.facebook.com/sharer/sharer.php?u={% url 'home:details' slug=instance.slug %}">Share on Facebook</a>
+
+    <a  class="btn btn-primary btn-sm"  role="button" href="https://plus.google.com/share?url={% url 'home:details' slug=instance.slug %}">Share on Google+</a>
+    <a  class="btn btn-primary btn-sm"  role="button" href="https://www.linkedin.com/shareArticle?mini=true&url=http://swiftforentrepreneurs.com/&title={{instance.content|urlify}}">
+        Share on Linkedin</a>    
+  </div>
+
+</div>
+<hr>
+<div class="container">
+    <div class="row">
+<!-- {{instance.content|truncatechars:10|urlify}}-->
+
+
+<div class="col col-lg-6 col-md-6 col-sm-12" id="comment" >
+  <h2>
+   Create a comment
+  </h2>
+{% if request.user.is_authenticated %}
+    <form method="POST">
+      {% csrf_token %}
+{{form|crispy}}
+<input class="btn btn-primary"  type="submit" value="submit" >
+   {% else %}
+   <p class="lead">Login To Comment on Post</p>
+   {% endif %}
+      <!--
+      <div class="form-group validate-input" data-validate="Cant be Zero">
+        <textarea class="form-control" placeholder="Create Your Comment" name="content" rows="2"> </textarea>
+        {% for err in form.content.errors %}
+        <small class="text-danger">{{err}}</small>
+        {% endfor %}
+        <br>
+        <input class="btn btn-primary" type="submit" value="submit" >
+   
+      </div>
+-->
+    
+    </form>
+
+ 
+</div>
+</div>
+</div>
+  <hr>
+  
+
+
+  <div class="container">
+<div class="row">
+  {% for comment in comments %}
+<div class="col col-lg-6 col-md-12 col-sm-12">
+
+  <figure class="text-left">
+    <blockquote class="blockquote">
+      <p>{{comment.content}}</p>
+    </blockquote>
+    <figcaption class="blockquote-footer">
+      Created By <cite title="Source Title">{{comment.user.get_full_name|title}} Since {{comment.timestamp|timesince}}</cite>
+    </figcaption>
+  </figure>
+
+</div>
+<div class="col col-lg-12 col-md-12 col-sm-12">
+
+  <p>{{comment.replies.all.count}} comments|  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#{{comment.id}}" aria-expanded="false" aria-controls="{{comment.id}}">
+    Reply
+   </button>
+
+{% if request.user.id == comment.user.id %}
+   <a href="{% url 'home:comment_delete' slug=comment.post.slug  id=comment.id %}">delete</a>
+   {% endif %}
+   <a href="{% url 'home:comment_page' slug=comment.post.slug  id=comment.id %}">share</a>
+
+  </p>  
+
+
+  </div>
+
+   <div class="collapse container at-2"  id="{{comment.id}}">
+    <h3>Replies</h3>  
+    {% if comment.replies.all %}
+     {% for reply in comment.replies.all %}
+     <blockquote class="blockquote">
+      <p class="mb-0"> {{reply.content}}</p>
+      <footer class="blockquote-footer">by {{reply.user.get_full_name|title}} since {{reply.timestamp|timesince}}</cite></footer>
+    </blockquote>
+  {% endfor %}
+    {% else %}
+    <blockquote class="blockquote">
+      <p class="mb-0">No Replies Yet</p>
+    </blockquote>
+     {% endif %}
+<div class="col col-lg-6">
+
+  <div class="form-group row">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <textarea class="form-control" placeholder="Reply to Comment" name="content" rows="2" col="1"></textarea>
+        <input type="hidden" name="comment_id"  value="{{comment.id}}">
+                {% for err in form.content.errors %}
+          <small class="text-danger">{{err}}</small>
+          {% endfor %}
+          <br>
+        <input class="btn btn-primary" type="submit" value="Reply" >
+      </div>
+  
+    </form>
+ 
+</div>
+
+</div>
+
+   </div>
+
+ 
+
+  <hr> 
+
+  {% endfor %}
+  </div>
+
+
+  </div>
+
+
+
+
+
+
+
+<!--
+<div class="fb-comments" data-numposts="5" data-href="http://{{ request.META.HTTP_HOST }}{% url 'home:details' slug=instance.slug %}"></div>
+<div class="fb-like" data-href="{% url 'home:details' slug=instance.slug %}" data-width="" data-layout="standard" data-action="like" data-size="large" data-share="true"></div>
+-->
+
+
+{% endblock %}
+
+

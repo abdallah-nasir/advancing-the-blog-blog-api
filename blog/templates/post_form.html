@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+
+
+<title>Create a Post</title>
+
+
+{% block content %}
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home:list' %}">List</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <div class="container">
+        <div class="row">
+          <div class="col col-lg-6">
+            <form method="POST" action="" enctype='multipart/form-data'>
+              {% csrf_token %}
+              <div class="col col-lg-12">
+                {% crispy form %}
+          <button class="btn btn-dark" type="submit">Done</button>
+           
+              </div>    
+  
+  </form>
+              </div>
+            </div>
+          </div>
+
+
+
+
+ 
+
+{% endblock %}
+
