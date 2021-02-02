@@ -1,0 +1,15 @@
+h1{
+    color:black; 
+}
+
+#cke_id_content{
+    margin:auto;
+    width:auto !important;
+}
+
+.textarea .form-control{
+    line-height:0.2px !important;
+}
+.btn-primary{
+    background-color:#4a5c77 !important;
+}
