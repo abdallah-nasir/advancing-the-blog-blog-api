@@ -2,7 +2,7 @@
 {% load static %}
 {% load urlify %}
 {% load bootstrap4 %}
-
+{% load crispy_forms_tags %}
 {% load markdown_deux_tags %}
 <div class="container">
 <div class="row">
@@ -42,7 +42,7 @@
         <form method="POST" action="" enctype='multipart/form-data'>
             {% csrf_token %}
            
-                {% bootstrap_form form %}
+                {% cripsy form %}
          
 
 

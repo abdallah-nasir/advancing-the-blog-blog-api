@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect,Http404
 from django.shortcuts import get_object_or_404
+from django.db.models import Count    
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
@@ -51,14 +52,15 @@ def post_detail(request,slug):          #retrive
 
 def post_list(request):          #list items
     instance = Post.objects.all()
-
+    user_posts = User.objects.annotate(total_posts = Count('post'))
+    my_posts = Post.objects.filter(user=request.user).count
     post_filter = PostFilter(request.GET,queryset=instance)
     instance = post_filter.qs 
 
-    paginator = Paginator(instance,4) # Show 5 contacts per page.
+    paginator = Paginator(instance,6) # Show 5 contacts per page.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    context ={"objects":page_obj,"myfilter":instance}
+    context ={"objects":page_obj,"myfilter":instance,"user_posts":user_posts,"my_posts":my_posts}
     return render(request,"post_list.html",context)
 
 @login_required(login_url="/login/")

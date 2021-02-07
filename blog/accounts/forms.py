@@ -5,7 +5,9 @@ from django.contrib.auth import (
     login,
     logout,
     )
+
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 User = get_user_model()
 
 class UserLoginForm(forms.Form):
@@ -17,38 +19,25 @@ class UserLoginForm(forms.Form):
         if username and password:
             user = authenticate(username=username, password=password)
             if not user:
-                raise forms.ValidationError("This user does not exist")
-            if not user.check_password(password):
-                raise forms.ValidationError("Incorrect passsword")
-            if not user.is_active:
-                raise forms.ValidationError("This user is not longer active.")
+                raise forms.ValidationError("Username or Password Might be WRONG")
+
         return super(UserLoginForm, self).clean(*args, **kwargs)
 
 
-class SignupForm(UserCreationForm):   
-    email2=forms.EmailField(label="Confirm Email")
-    email= forms.EmailField(label="Email Address")
+class SignupForm(UserCreationForm):
+    email = forms.EmailField(label="Email")
+    email2 =forms.EmailField(label="Confirm Email")
     class Meta:
         model = User
-        fields = ['username',"first_name","last_name",'email',"email2",'password1','password2']
+        fields = ["username","first_name","last_name","email","email2",'password1']
 
-    def clean(self,*args,**kwargs):
-        email = self.cleaned_data.get("email")
-        email2 = self.cleaned_data.get("email2")
-        email_qs = User.objects.filter(email=email)
-        if email_qs.exists():
-            raise forms.ValidationError("Email Already Exists")
+    def clean(self):
+        cleaned_data = super(SignupForm, self).clean()
+        email = cleaned_data.get("email")
+        if User.objects.filter(email__iexact=email).exists():
+            raise ValidationError("this Email is Already Signed in")
+        email2 = cleaned_data.get("email2")
         if email != email2:
-            raise forms.ValidationError("Email Dosn't match")
-        return super(SignupForm,self).clean(*args,**kwargs)
+            raise ValidationError("Email Field Must be The Same")
+        return cleaned_data
 
-
-    def clean_email2(self,*args,**kwargs):
-        email = self.cleaned_data.get("email")
-        email2 = self.cleaned_data.get("email2")
-        email_qs = User.objects.filter(email=email)
-        if email_qs.exists():
-            raise forms.ValidationError("Email Already Exists")
-        if email != email2:
-            raise forms.ValidationError("Email Dosn't match")
-        return email

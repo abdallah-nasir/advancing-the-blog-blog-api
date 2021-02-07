@@ -6,7 +6,12 @@
 
 <title>List</title>
 
-      
+
+{% for user in user_posts %}
+{{user.username}} Got {{ user.total_posts }}
+
+{% endfor %}
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'home:list' %}">List</a>
@@ -18,12 +23,30 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{% url 'home:post'  %}">Create New Post</a>
         </li>
+
+        {% if request.user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">User: {{request.user.get_full_name|title}}</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Posts: {{my_posts}}</a>
+        </li>
+        
+        <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{% url 'accounts:logout' %}">Logout</a>
         </li>
+
+        {% endif %}
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'accounts:login' %}">Login</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'accounts:register' %}">Register</a>
+        </li>
+      
+
       </ul>
     </div>
   </div>
@@ -40,7 +63,7 @@
                         {% if obj.image %}
                         <img src="{{obj.image.url}}" class="card-img-top"  alt="Image">
                         {% else %}
-                        <img src="{% static 'default.png' %}"   class="card-img-top"  alt="Image">
+                        <img src="{% static 'index.png' %}"   class="card-img-top"  alt="Image">
 
                        {% endif %}
                         <div class="card-body">
@@ -65,28 +88,30 @@
 
 
 
-<div class="col col-g-12">
-<div class="pagination_wrap">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            {% if objects.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{objects.previous_page_number}}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {% endif %}
+            {% for i in objects.paginator.page_range %}
+            <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+            {% endfor %}
+            {% if objects.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{objects.next_page_number}}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
 
-<ul class="pagination">
-  
-{% if objects.has_previous %}
-<li class="page-item">
-  <li  class="page-item" ><a href="?page={{objects.previous_page_number}}"><li class="ti-angle-left"></li></a> </li>
-{% endif %}
-{% for i in objects.paginator.page_range %}
-<li  class="page-item"><a href="?page={{i}}"><span>{{i}}</span></a></li>
-{% endfor %}
+        {% endif %}
 
-{% if objects.has_next %}
-<li  class="page-item"><a href="?page={{objects.next_page_number}}"><li class="ti-angle-left"></li></a> </li>
-{% endif %}
-</ul>
-
-</div>
-
-</div>
-{% endif %}
 
 
               

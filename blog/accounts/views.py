@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,Http404
 from django.contrib.auth import (
     authenticate,get_user_model,login,logout
 )
+
 from .forms import *
 from .decorators import notLoggedUsers
 from django.contrib import messages
@@ -19,24 +20,26 @@ def login_view(request):
         login(request,user)
         if next:
             return redirect(next)
-        return redirect("/list")    
+        return redirect("/list")
     context={"form":form}
     return render(request,"login.html",context)
 
-@notLoggedUsers
+
 def register_view(request):
-    form = SignupForm(request.POST or None)
-    if form.is_valid():
-       form = SignupForm(request.POST or None)
-       user = form.save(commit=False)
-       password = form.cleaned_data.get("password") 
-       user.set_password(password)
-       user.save()
-       new_user = authenticate(request,username=user.username,password=user.password)
-       login(request,new_user)
-       if next:
-           return redirect(next)  
-       return redirect("/list")
+    next=request.GET.get("next")
+    if request.method =="POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():  
+            form.save()
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password1"]
+            user = authenticate(username=username,password=password)
+            login(request,user)
+            if next:
+                return redirect(next)
+            return redirect("/list")
+    else:
+        form = SignupForm()
     context={"form":form}
     return render(request,"register.html",context)
 

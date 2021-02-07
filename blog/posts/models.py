@@ -4,8 +4,8 @@ from django.db.models.signals import pre_save
 from django.utils.text import slugify
 from .utils import unique_slug_generator
 from ckeditor.fields import RichTextField
-
 # Create your models here.
+
 
 def upload_location(instance,filename):
     filebase,extension = filename.split(".")
@@ -18,14 +18,15 @@ class Post(models.Model):
   #  content = models.TextField() 
     updated = models.DateTimeField(auto_now=True,auto_now_add=False)
     timestamp = models.DateTimeField(auto_now=False,auto_now_add=True)
-    image = models.ImageField(upload_to=upload_location,null=True, blank=True)
+    image = models.ImageField(upload_to=upload_location,null=True, blank=True,default="index.png")
     slug = models.SlugField(null=True,unique=True,blank=True)
     
 
     def __str__(self):
         return self.title
 
-
+    def post_count(user):
+        return Post.objects.filter(user=user).count()
 
     class Meta:
         ordering =["-timestamp"] 
@@ -70,3 +71,6 @@ def pre_save_post_receiver(sender,instance,*args,**kwargs):
 
 pre_save.connect(pre_save_post_receiver,sender=Post)
 '''
+
+
+
