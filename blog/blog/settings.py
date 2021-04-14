@@ -168,9 +168,3 @@ REST_FRAMEWORK = {
     ),
 }
 
-'''
-curl -X POST -d "username=abdallah&password=123456789Boss" http://127.0.0.1:8000/api/auth/token-auth/
-{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFiZGFsbGFoIiwiZXhwIjoxNjEyNzIyNjg1LCJlbWFpbCI6ImFiZGFsbGFoLm5hc2lyQHltYWlsLmNvbSJ9.R4eNW0dImp_CmQhorrb4QkH_2TFpgpVpFpXF5UIfgY8"}
-curl -X POST -H "Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFiZGFsbGFoIiwiZXhwIjoxNjEyNzIyNjg1LCJlbWFpbCI6ImFiZGFsbGFoLm5hc2lyQHltYWlsLmNvbSJ9.R4eNW0dImp_CmQhorrb4QkH_2TFpgpVpFpXF5UIfgY8" -H "Content-Type: application/json" -d '{"title":"jhh","content":"dsfsdfsdf"}' http://127.0.0.1:8000/api/create
-
-'''
